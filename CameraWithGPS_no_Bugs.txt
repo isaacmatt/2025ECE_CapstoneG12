@@ -1,0 +1,60 @@
+#!/usr/bin/python3
+
+from gpiozero import LED, Button
+from signal import pause
+from gps import *
+import os
+import time
+import threading
+
+buttonPicture = Button(23)
+ledPicture = LED(5)
+ledGPS = LED(13)
+
+snap = False
+running = True
+
+longitude = ''
+latitude = ''
+gpsd = gps(mode=WATCH_ENABLE|WATCH_NEWSTYLE)
+
+def takePicture():	
+	global snap
+	snap = not snap
+
+def getPositionData(gps):
+	nx = gpsd.next()
+	global longitude,latitude
+	if nx['class'] == 'TPV':
+		ledGPS.on()
+		latitude = getattr(nx,'lat', "Unknown")
+		longitude = getattr(nx,'lon', "Unknown")
+	else:
+		ledGPS.off()
+	return "_long_" + str(longitude) + "_lat_" + str(latitude)
+
+try:
+
+	print("\nApplication started")
+	os.system("sudo gpsd /dev/serial0 -F /var/run/gpsd.sock")
+	#t1 = threading.Thread(target = getPositionData,args=gpsd)
+	#t1.start()
+	buttonPicture.when_pressed =  takePicture
+	CoordString = ''
+	while running:
+		CoordString = getPositionData(gpsd)
+		if snap:
+			ledPicture.blink()
+			os.system('fswebcam -r 3840x2160 --no-banner /home/pizero/Temp/pictures/%m%d%Y%H%M%S'+ CoordString + '.jpg')
+			time.sleep(5)
+		else:
+			ledPicture.off()
+	print("\nI have passed the gates")
+	pause()
+except KeyboardInterrupt:
+	running = False
+	#t1.join()
+	print("\nYou exited Successfully")
+finally:
+	pass
+
