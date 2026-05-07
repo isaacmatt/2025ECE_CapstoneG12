@@ -64,13 +64,12 @@ The augmentation pipeline (`AugPhotos.py`) was used to expand training coverage 
 
 | Metric                           | Value                       |
 |----------------------------------|-----------------------------|
-| Inference frame rate (Pi)        | ~[X] FPS                    |
-| Precision                        | [X]%                        |
-| Recall                           | [X]%                        |
-| mAP@0.5                          | [X]                         |
-| End-to-end latency (capture → log) | ~[X] ms                   |
+| Precision                        | [91]%                        |
+| Recall                           | [85]%                        |
+| mAP@0.5                          | [90]                         |
 
-*Replace bracketed values with your real numbers — even rough numbers from your final report are fine.*
+
+
 
 ---
 
